@@ -4,27 +4,25 @@ using System.Collections.Generic;
 
 namespace aoc2020
 {
-    public class Day1
+    public class Day1 : Day
     {
         private List<int> entries = new List<int>();
 
-        public Day1(string filename)
+        public Day1(string input) : base(input)
         {
-            using (var sr = new StreamReader(filename))
+            using (var sr = new StringReader(input))
             {
                 string line;
 
                 while ((line = sr.ReadLine()) != null)
-                {
                     entries.Add(Int32.Parse(line));
-                }
             }
+
+            entries.Sort();
         }
 
-        public int Part1()
+        public override int Part1()
         {
-            entries.Sort();
-
             for (int i = 0; i < entries.Count; i++)
             {
                 for (int j = 0; j < entries.Count; j++)
@@ -43,10 +41,8 @@ namespace aoc2020
             throw new InvalidOperationException();
         }
 
-        public int Part2()
+        public override int Part2()
         {
-            entries.Sort();
-
             for (int i = 0; i < entries.Count; i++)
             {
                 for (int j = 0; j < entries.Count; j++)

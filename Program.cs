@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace aoc2020
 {
@@ -6,8 +9,38 @@ namespace aoc2020
     {
         static void Main(string[] args)
         {
-            var day1 = new Day1("./input/day1.txt");
-            Console.WriteLine($"Day1, Part1: {day1.Part1()}, Part2: {day1.Part2()}");
+            var success = Int32.TryParse(args.ElementAtOrDefault(0), out var dayNumber);
+            if (!success)
+            {
+                Console.WriteLine("Please enter the day number as the first argument");
+                return;
+            }
+
+            if (!days.ContainsKey(dayNumber))
+            {
+                Console.WriteLine($"Please enter a valid day number ({days.Keys.Min()}-{days.Keys.Max()})");
+                return;
+            }
+
+            var (dayType, inputFile) = days[dayNumber];
+
+            var input = File.ReadAllText(inputFile);
+            var day = Activator.CreateInstance(dayType, input) as Day;
+
+            Console.WriteLine($"Day {dayNumber}, Part1: {day.Part1()}, Part2: {day.Part2()}");
         }
+
+        private static Dictionary<int, (Type, string)> days = new Dictionary<int, (Type, string)>
+        {
+            { 1, (typeof(Day1), "./input/day1.txt") },
+        };
+
+    }
+
+    public abstract class Day
+    {
+        public Day(string input) { }
+        public abstract int Part1();
+        public abstract int Part2();
     }
 }
