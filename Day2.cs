@@ -69,14 +69,8 @@ namespace aoc2020
             }
         }
 
-        public override string Part1()
-        {
-            return policies.Count(p => p.ValidCount()).ToString();
-        }
+        public override string Part1() => policies.Count(p => p.ValidCount()).ToString();
 
-        public override string Part2()
-        {
-            return policies.Count(p => p.ValidPositions()).ToString();
-        }
+        public override string Part2() => policies.Count(p => p.ValidPositions()).ToString();
     }
 }
