@@ -27,12 +27,13 @@ namespace aoc2020
             var input = File.ReadAllText(inputFile);
             var day = Activator.CreateInstance(dayType, input) as Day;
 
-            Console.WriteLine($"Day {dayNumber}, Part1: {day.Part1()}, Part2: {day.Part2()}");
+            Console.WriteLine($"Day {dayNumber}, Part 1: {day.Part1()}, Part 2: {day.Part2()}");
         }
 
         private static Dictionary<int, (Type, string)> days = new Dictionary<int, (Type, string)>
         {
             { 1, (typeof(Day1), "./input/day1.txt") },
+            { 2, (typeof(Day2), "./input/day2.txt") },
         };
 
     }
