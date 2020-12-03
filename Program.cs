@@ -34,6 +34,7 @@ namespace aoc2020
         {
             { 1, (typeof(Day1), "./input/day1.txt") },
             { 2, (typeof(Day2), "./input/day2.txt") },
+            { 3, (typeof(Day3), "./input/day3.txt") },
         };
 
     }
@@ -41,7 +42,7 @@ namespace aoc2020
     public abstract class Day
     {
         public Day(string input) { }
-        public abstract int Part1();
-        public abstract int Part2();
+        public abstract string Part1();
+        public abstract string Part2();
     }
 }

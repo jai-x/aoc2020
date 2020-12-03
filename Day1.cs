@@ -21,7 +21,7 @@ namespace aoc2020
             entries.Sort();
         }
 
-        public override int Part1()
+        public override string Part1()
         {
             for (int i = 0; i < entries.Count; i++)
             {
@@ -34,14 +34,14 @@ namespace aoc2020
                     var second = entries[j];
 
                     if ((first + second) == 2020)
-                        return first * second;
+                        return (first * second).ToString();
                 }
             }
 
-            throw new InvalidOperationException();
+            return "Error";
         }
 
-        public override int Part2()
+        public override string Part2()
         {
             for (int i = 0; i < entries.Count; i++)
             {
@@ -57,12 +57,12 @@ namespace aoc2020
                         var third = entries[k];
 
                         if ((first + second + third) == 2020)
-                            return first * second * third;
+                            return (first * second * third).ToString();
                     }
                 }
             }
 
-            throw new InvalidOperationException();
+            return "Error";
         }
     }
 }
