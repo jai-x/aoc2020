@@ -24,7 +24,7 @@ namespace aoc2020
 
             var (dayType, inputFile) = days[dayNumber];
 
-            var input = File.ReadAllText(inputFile);
+            var input = File.ReadAllText(args.ElementAtOrDefault(1) ?? inputFile);
             var day = Activator.CreateInstance(dayType, input) as Day;
 
             Console.WriteLine($"Day {dayNumber}, Part 1: {day.Part1()}, Part 2: {day.Part2()}");
@@ -38,6 +38,7 @@ namespace aoc2020
             { 4, (typeof(Day4), "./input/day4.txt") },
             { 5, (typeof(Day5), "./input/day5.txt") },
             { 6, (typeof(Day6), "./input/day6.txt") },
+            { 7, (typeof(Day7), "./input/day7.txt") },
         };
 
     }
