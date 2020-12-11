@@ -32,15 +32,16 @@ namespace aoc2020
 
         private static Dictionary<int, (Type, string)> days = new Dictionary<int, (Type, string)>
         {
-            { 1, (typeof(Day1), "./input/day1.txt") },
-            { 2, (typeof(Day2), "./input/day2.txt") },
-            { 3, (typeof(Day3), "./input/day3.txt") },
-            { 4, (typeof(Day4), "./input/day4.txt") },
-            { 5, (typeof(Day5), "./input/day5.txt") },
-            { 6, (typeof(Day6), "./input/day6.txt") },
-            { 7, (typeof(Day7), "./input/day7.txt") },
-            { 8, (typeof(Day8), "./input/day8.txt") },
-            { 9, (typeof(Day9), "./input/day9.txt") },
+            { 1,  (typeof(Day1),  "./input/day1.txt" ) },
+            { 2,  (typeof(Day2),  "./input/day2.txt" ) },
+            { 3,  (typeof(Day3),  "./input/day3.txt" ) },
+            { 4,  (typeof(Day4),  "./input/day4.txt" ) },
+            { 5,  (typeof(Day5),  "./input/day5.txt" ) },
+            { 6,  (typeof(Day6),  "./input/day6.txt" ) },
+            { 7,  (typeof(Day7),  "./input/day7.txt" ) },
+            { 8,  (typeof(Day8),  "./input/day8.txt" ) },
+            { 9,  (typeof(Day9),  "./input/day9.txt" ) },
+            { 10, (typeof(Day10), "./input/day10.txt") },
         };
 
     }
