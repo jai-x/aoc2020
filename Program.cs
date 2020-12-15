@@ -46,6 +46,7 @@ namespace aoc2020
             { 12, (typeof(Day12), "./input/day12.txt") },
             { 13, (typeof(Day13), "./input/day13.txt") },
             { 14, (typeof(Day14), "./input/day14.txt") },
+            { 15, (typeof(Day15), "./input/day15.txt") },
         };
 
     }
