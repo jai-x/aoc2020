@@ -6,139 +6,117 @@ namespace aoc2020
 {
     public class Day19 : Day
     {
-        private class Rule
-        {
-            private static Dictionary<(int, string), string> memo = new Dictionary<(int, string), string>();
-
-            private int self;
-            private Dictionary<int, Rule> rules;
-            private int[][] lookups;
-            private char? literal = null;
-
-            public Rule(string rule, Dictionary<int, Rule> rules, int self)
-            {
-                this.self = self;
-                this.rules = rules;
-
-                if (rule.Length == 3 && rule[0] == '"')
-                    literal = rule[1];
-                else
-                    lookups = rule.Split('|')
-                                  .Select(l => l.Trim().Split(' ').Select(Int32.Parse).ToArray())
-                                  .ToArray();
-            }
-
-            public static void ResetMemo() => memo.Clear();
-
-            public override string ToString()
-            {
-                var toString = $"[{nameof(Rule)}: {self}] ";
-
-                toString += (literal != null)
-                         ? $"literal ({literal})"
-                         : "";
-
-                toString += (lookups != null)
-                         ? "(" + String.Join(" | ", lookups?.Select(l => String.Join(" ", l))) + ")"
-                         : "";
-
-                return toString;
-            }
-
-            private void padLog(int level, string log)
-            {
-                Console.WriteLine(new String(' ', level) + this.ToString() + log);
-            }
-
-            public string Match(string input, int level = 0)
-            {
-                if (String.IsNullOrEmpty(input))
-                    return null;
-
-                padLog(level, ", matching? " + input);
-
-                if (memo.ContainsKey((self, input)))
-                {
-                    var ret = memo[(self, input)];
-                    padLog(level, ", memo? " +  input + " returning! " + ret);
-                    return ret;
-                }
-
-
-                if (literal != null)
-                {
-                    if (input.StartsWith((char)literal))
-                    {
-                        padLog(level, ", matched! " + literal);
-                        var ret = input[1..];
-                        padLog(level, ", returning! " + ((ret == "") ? "(empty)" : ret));
-                        return ret;
-                    }
-                    else
-                    {
-                        padLog(level, ", returning! null");
-                        return null;
-                    }
-                }
-
-                foreach (var subrules in lookups)
-                {
-                    padLog(level, ", subrules? " + String.Join(", ", subrules));
-
-                    string result = input.Clone() as string;
-                    foreach (var r in subrules)
-                    {
-                        result = rules[r].Match(result, level + 2);
-                    }
-
-                    if (result != null)
-                    {
-                        padLog(level, ", subrules! " + String.Join(", ", subrules) + ", returning! " + result);
-                        padLog(level, ", memo! " +  input);
-                        memo.Add((self, input), result);
-                        return result;
-                    }
-                }
-
-                padLog(level, ", memo! " +  input);
-                memo.Add((self, input), null);
-                return null;
-            }
-        }
+        private string[] messages;
 
         private Dictionary<int, Rule> rules = new Dictionary<int, Rule>();
 
-        private string[] messages;
-
         public Day19(string input) : base(input)
         {
-            var inputParts = input.Trim().Split("\n\n");
-            var (rulesStr, messagesStr) = (inputParts[0], inputParts[1]);
+            var inputLines = input.Trim()
+                                  .Split("\n\n")
+                                  .Select(b => b.Split('\n').Select(l => l.Trim()).ToArray())
+                                  .ToArray();
 
-            messages = messagesStr.Split('\n').Select(m => m.Trim()).ToArray();
+            messages = inputLines.Last();
 
-            foreach (var ruleStr in rulesStr.Trim().Split('\n').Select(r => r.Trim()))
+            var ruleLines = inputLines.First();
+
+            foreach (var ruleStr in ruleLines)
             {
                 var parts = ruleStr.Split(':');
-                var num = Int32.Parse(parts[0]);
-                var rule = new Rule(parts[1].Trim(), rules, num);
-                rules.Add(num, rule);
+                var (number, body) = (Int32.Parse(parts.First()), parts.Last().Trim());
+
+                if ((body.Length == 3) && body[0] == '"')
+                    rules.Add(number, new LiteralRule
+                    {
+                        Self = number,
+                        Literal = body.Replace('"', ' ')
+                                      .Trim()
+                                      .First(),
+                    });
+                else
+                    rules.Add(number, new CompositeRule
+                    {
+                        Self = number,
+                        Subrules = body.Split('|')
+                                       .Select(s => s.Trim())
+                                       .Select(s => s.Split(' ').Select(Int32.Parse).ToList())
+                                       .ToList(),
+                    });
             }
         }
 
-        public override string Part1()
+        private abstract class Rule
         {
-            return messages.Where(m => rules[0].Match(m) == "").ToArray().Count().ToString();
+            public int Self;
         }
+
+        private class LiteralRule : Rule
+        {
+            public char Literal;
+
+            public override string ToString() => $"{Self}: \"{Literal}\"";
+        }
+
+        private class CompositeRule : Rule
+        {
+            public List<List<int>> Subrules;
+
+            public override string ToString() => $"{Self}: {String.Join(" | ", Subrules.Select(g => String.Join(" ", g)))}";
+        }
+
+        private bool match(IEnumerable<char> input, IEnumerable<int> ruleSequence)
+        {
+            if (!input.Any() || !ruleSequence.Any()) // either empty
+                return !input.Any() && !ruleSequence.Any(); // both empty
+
+            var r = rules[ruleSequence.First()];
+
+            if (r is LiteralRule)
+            {
+                var rule = r as LiteralRule;
+
+                if (input.First() == rule.Literal)
+                    return match(input.Skip(1), ruleSequence.Skip(1)); // match first letter
+                else
+                    return false; // end of sequence
+            }
+
+            if (r is CompositeRule)
+            {
+                var rule = r as CompositeRule;
+
+                return rule.Subrules.Select(sub => match(input, sub.Concat(ruleSequence.Skip(1)))).Any(m => m); // chain
+            }
+
+            return false;
+        }
+
+        public override string Part1() => messages.Where(m => match(m, new[] { 0 })).Count().ToString();
 
         public override string Part2()
         {
-            rules[8] = new Rule("42 | 42 8", rules, 8);
-            rules[11] = new Rule("42 31 | 42 11 31", rules, 11);
+            rules[8] = new CompositeRule
+            {
+                Self = 8,
+                Subrules = new List<List<int>>
+                {
+                    new List<int> { 42 },
+                    new List<int> { 42, 8 },
+                },
+            };
 
-            Rule.ResetMemo();
+            rules[11] = new CompositeRule
+            {
+                Self = 11,
+                Subrules = new List<List<int>>
+                {
+                    new List<int> { 42, 31 },
+                    new List<int> { 42, 11, 31 },
+                },
+            };
 
-            return messages.Where(m => rules[0].Match(m) == "").ToArray().Count().ToString();
+            return messages.Where(m => match(m, new[] { 0 })).Count().ToString();
         }
     }
 }
