@@ -40,7 +40,7 @@ namespace aoc2020
                 new String(West.ToCharArray().Reverse().ToArray()),
             };
 
-
+            public int HashCount => Data.Select(r => r.Count(ch => ch == '#')).Sum();
 
             private int angle = 0;
             private bool flipped = false;
@@ -86,6 +86,8 @@ namespace aoc2020
                                                 .Distinct()                     // remove duplicates
                                                 .ToList();
 
+        private Tile seaMonster;
+
         public Day20(string input) : base(input)
         {
             tiles = input.Trim()
@@ -104,6 +106,17 @@ namespace aoc2020
                         borderMap[border].Add(id);
                     else
                         borderMap.Add(border, new List<int> { id });
+
+            seaMonster = new Tile
+            {
+                ID = -1,
+                Data = new char[][]
+                {
+                    "                  # ".ToCharArray(),
+                    "#    ##    ##    ###".ToCharArray(),
+                    " #  #  #  #  #  #   ".ToCharArray(),
+                },
+            };
         }
 
         public override string Part1() => cornerIds.Aggregate(1L, (product, id) => product * (long)id).ToString();
@@ -196,17 +209,6 @@ namespace aoc2020
             return new Tile { ID = -1, Data = picData };
         }
 
-        private char[][] seaMonster => new char[][]
-        {
-            "                  # ".ToCharArray(),
-            "#    ##    ##    ###".ToCharArray(),
-            " #  #  #  #  #  #   ".ToCharArray(),
-        };
-
-        private int seaMonsterWidth => seaMonster.First().Length;
-        private int seaMonsterHeight => seaMonster.Length;
-        private int seaMonsterCount => seaMonster.Select(r => r.Count(ch => ch == '#')).Sum();
-
         public override string Part2()
         {
             var picture = fullPicture();
@@ -214,19 +216,19 @@ namespace aoc2020
             var seaMonstersFound = 0;
             while (seaMonstersFound < 1)
             {
-                for (var y = 0; y + seaMonsterHeight < picture.Height; y++)
+                for (var y = 0; y + seaMonster.Height < picture.Height; y++)
                 {
-                    for (var x = 0; x + seaMonsterWidth < picture.Width; x++)
+                    for (var x = 0; x + seaMonster.Width < picture.Width; x++)
                     {
                         var found = true;
-                        for (var ys = 0; ys < seaMonsterHeight; ys++)
+                        for (var ys = 0; ys < seaMonster.Height; ys++)
                         {
-                            for (var xs = 0; xs < seaMonsterWidth; xs++)
+                            for (var xs = 0; xs < seaMonster.Width; xs++)
                             {
-                                if (seaMonster[ys][xs] == ' ')
+                                if (seaMonster.Data[ys][xs] == ' ')
                                     continue;
 
-                                if (seaMonster[ys][xs] != picture.Data[y+ys][x+xs])
+                                if (seaMonster.Data[ys][xs] != picture.Data[y+ys][x+xs])
                                     found = false;
                             }
                         }
@@ -237,7 +239,7 @@ namespace aoc2020
                 picture.Permutate();
             }
 
-            return (picture.Data.Select(row => row.Count(t => t == '#')).Sum() - (seaMonsterCount * seaMonstersFound)).ToString();
+            return (picture.HashCount - (seaMonster.HashCount * seaMonstersFound)).ToString();
         }
     }
 }
